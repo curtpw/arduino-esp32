@@ -5,7 +5,7 @@
  *      Author: kolban
  */
 #include "sdkconfig.h"
-#if defined(CONFIG_BLUEDROID_ENABLED)
+#if defined(CONFIG_BT_ENABLED)
 #include <freertos/FreeRTOS.h>
 #include <freertos/event_groups.h>
 #include <freertos/task.h>
@@ -347,7 +347,7 @@ gatts_event_handler BLEDevice::m_customGattsHandler = nullptr;
 			return;
 		}
 
-#ifndef CONFIG_BT_CLASSIC_ENABLED
+#ifndef CLASSIC_BT_ENABLED
 		esp_bt_controller_mem_release(ESP_BT_MODE_CLASSIC_BT);  
 #endif
 		esp_bt_controller_config_t bt_cfg = BT_CONTROLLER_INIT_CONFIG_DEFAULT();
@@ -357,7 +357,7 @@ gatts_event_handler BLEDevice::m_customGattsHandler = nullptr;
 			return;
 		}
 
-#ifndef CONFIG_BT_CLASSIC_ENABLED
+#ifndef CLASSIC_BT_ENABLED
 		errRc = esp_bt_controller_enable(ESP_BT_MODE_BLE);
 		if (errRc != ESP_OK) {
 			log_e("esp_bt_controller_enable: rc=%d %s", errRc, GeneralUtils::errorToString(errRc));
@@ -499,11 +499,7 @@ gatts_event_handler BLEDevice::m_customGattsHandler = nullptr;
  */
 void BLEDevice::whiteListAdd(BLEAddress address) {
 	log_v(">> whiteListAdd: %s", address.toString().c_str());
-#ifdef ESP_IDF_VERSION_MAJOR
-    esp_err_t errRc = esp_ble_gap_update_whitelist(true, *address.getNative(), BLE_WL_ADDR_TYPE_PUBLIC);  // HACK!!! True to add an entry.
-#else
-    esp_err_t errRc = esp_ble_gap_update_whitelist(true, *address.getNative());  // True to add an entry.
-#endif
+	esp_err_t errRc = esp_ble_gap_update_whitelist(true, *address.getNative());  // True to add an entry.
 	if (errRc != ESP_OK) {
 		log_e("esp_ble_gap_update_whitelist: rc=%d %s", errRc, GeneralUtils::errorToString(errRc));
 	}
@@ -517,11 +513,7 @@ void BLEDevice::whiteListAdd(BLEAddress address) {
  */
 void BLEDevice::whiteListRemove(BLEAddress address) {
 	log_v(">> whiteListRemove: %s", address.toString().c_str());
-#ifdef ESP_IDF_VERSION_MAJOR
-    esp_err_t errRc = esp_ble_gap_update_whitelist(false, *address.getNative(), BLE_WL_ADDR_TYPE_PUBLIC);  // HACK!!! False to remove an entry.
-#else
-    esp_err_t errRc = esp_ble_gap_update_whitelist(false, *address.getNative());  // False to remove an entry.
-#endif
+	esp_err_t errRc = esp_ble_gap_update_whitelist(false, *address.getNative());  // False to remove an entry.
 	if (errRc != ESP_OK) {
 		log_e("esp_ble_gap_update_whitelist: rc=%d %s", errRc, GeneralUtils::errorToString(errRc));
 	}
@@ -669,4 +661,4 @@ void BLEDevice::setCustomGattsHandler(gatts_event_handler handler) {
 	m_customGattsHandler = handler;
 }
 
-#endif // CONFIG_BLUEDROID_ENABLED
+#endif // CONFIG_BT_ENABLED

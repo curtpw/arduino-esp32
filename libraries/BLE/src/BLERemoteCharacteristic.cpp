@@ -8,7 +8,7 @@
 #include "BLERemoteCharacteristic.h"
 
 #include "sdkconfig.h"
-#if defined(CONFIG_BLUEDROID_ENABLED)
+#if defined(CONFIG_BT_ENABLED)
 
 #include <esp_gattc_api.h>
 #include <esp_err.h>
@@ -52,7 +52,6 @@ BLERemoteCharacteristic::BLERemoteCharacteristic(
  */
 BLERemoteCharacteristic::~BLERemoteCharacteristic() {
 	removeDescriptors();   // Release resources for any descriptor information we may have allocated.
-	free(m_rawData);
 } // ~BLERemoteCharacteristic
 
 
@@ -246,10 +245,6 @@ void BLERemoteCharacteristic::gattClientEventHandler(esp_gattc_cb_event_t event,
 			}
 			break;
 
-		case ESP_GATTC_DISCONNECT_EVT:
-			m_semaphoreWriteCharEvt.give(1);
-			break;
-			
 		default:
 			break;
 	} // End switch
@@ -618,4 +613,4 @@ void BLERemoteCharacteristic::setAuth(esp_gatt_auth_req_t auth) {
     m_auth = auth;
 }
 
-#endif /* CONFIG_BLUEDROID_ENABLED */
+#endif /* CONFIG_BT_ENABLED */
