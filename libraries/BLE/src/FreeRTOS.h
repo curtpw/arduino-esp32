@@ -16,6 +16,29 @@
 #include <freertos/semphr.h>     // Include the semaphore definitions.
 #include <freertos/ringbuf.h>    // Include the ringbuffer definitions.
 
+typedef enum {
+	/**
+	 * No-split buffers will only store an item in contiguous memory and will
+	 * never split an item. Each item requires an 8 byte overhead for a header
+	 * and will always internally occupy a 32-bit aligned size of space.
+	 */
+	RINGBUF_TYPE_NOSPLIT = 0,
+	/**
+	 * Allow-split buffers will split an item into two parts if necessary in
+	 * order to store it. Each item requires an 8 byte overhead for a header,
+	 * splitting incurs an extra header. Each item will always internally occupy
+	 * a 32-bit aligned size of space.
+	 */
+	RINGBUF_TYPE_ALLOWSPLIT,
+	/**
+	 * Byte buffers store data as a sequence of bytes and do not maintain separate
+	 * items, therefore byte buffers have no overhead. All data is stored as a
+	 * sequence of byte and any number of bytes can be sent or retrieved each
+	 * time.
+	 */
+	RINGBUF_TYPE_BYTEBUF
+} ringbuf_type_t;
+
 
 /**
  * @brief Interface to %FreeRTOS functions.
